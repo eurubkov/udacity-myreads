@@ -2,11 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import Book from "./Book";
 
-const Books = ({ books }) => {
+const Books = ({ books, onShelfChange }) => {
   const shelvesMap = {
-    "Want to Read":"wantToRead",
-    "Read":"read",
-    "Currently Reading":"currentlyReading"
+    "Want to Read": "wantToRead",
+    "Read": "read",
+    "Currently Reading": "currentlyReading",
   };
   const booksByShelf = (books, shelf) => {
     return (
@@ -15,9 +15,11 @@ const Books = ({ books }) => {
         <div className="bookshelf-books">
           <ol className="books-grid">
             {filterBooksByShelf(books, shelvesMap[shelf]).map((book) => {
-              return <li key={book.id}>
-                  <Book book={book} />
-                </li>;
+              return (
+                <li key={book.id}>
+                  <Book book={book} onShelfChange={onShelfChange} />
+                </li>
+              );
             })}
           </ol>
         </div>
@@ -33,7 +35,7 @@ const Books = ({ books }) => {
       return filtered;
     }, []);
     return filtered;
-  }
+  };
   return (
     <div className="list-books-content">
       <div>

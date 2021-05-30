@@ -22,16 +22,30 @@ class BooksApp extends React.Component {
   }
 
   getAllBooks = () => {
-    BooksAPI.getAll().then((books) => this.setState({books}))
+    BooksAPI.getAll().then((books) => this.setState({ books }));
+  };
+
+  updateBook = (book, newShelf) => {
+    BooksAPI.update(book, newShelf).then((_) => this.setState((prevState) => {
+      let updatedBooks = prevState.books.map(b => b.id === book.id ? {...b, shelf: newShelf} : b);
+      return {books: updatedBooks};
+    }));
   }
 
+  onShelfChange = (book, newShelf) => {
+    this.updateBook(book, newShelf);
+  };
+
   render() {
-    return <div className="app">
-        {this.state.showSearchPage ? <div className="search-books">
+    return (
+      <div className="app">
+        {this.state.showSearchPage ? (
+          <div className="search-books">
             <div className="search-books-bar">
-              <button className="close-search" onClick={() => this.setState(
-                    { showSearchPage: false }
-                  )}>
+              <button
+                className="close-search"
+                onClick={() => this.setState({ showSearchPage: false })}
+              >
                 Close
               </button>
               <div className="search-books-input-wrapper">
@@ -49,20 +63,25 @@ class BooksApp extends React.Component {
             <div className="search-books-results">
               <ol className="books-grid" />
             </div>
-          </div> : <div className="list-books">
+          </div>
+        ) : (
+          <div className="list-books">
             <div className="list-books-title">
               <h1>MyReads</h1>
             </div>
-            <Books books={this.state.books} />
+            <Books
+              books={this.state.books}
+              onShelfChange={this.onShelfChange}
+            />
             <div className="open-search">
-              <button
-                onClick={() => this.setState({ showSearchPage: true })}
-              >
+              <button onClick={() => this.setState({ showSearchPage: true })}>
                 Add a book
               </button>
             </div>
-          </div>}
-      </div>;
+          </div>
+        )}
+      </div>
+    );
   }
 }
 
