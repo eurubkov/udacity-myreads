@@ -3,13 +3,18 @@ import PropTypes from "prop-types";
 import Book from "./Book";
 
 const Books = ({ books }) => {
-  const booksByShelf = (books, category) => {
+  const shelvesMap = {
+    "Want to Read":"wantToRead",
+    "Read":"read",
+    "Currently Reading":"currentlyReading"
+  };
+  const booksByShelf = (books, shelf) => {
     return (
       <div>
-        <h2 className="bookshelf-title">{category}</h2>
+        <h2 className="bookshelf-title">{shelf}</h2>
         <div className="bookshelf-books">
           <ol className="books-grid">
-            {books.map((book) => {
+            {filterBooksByShelf(books, shelvesMap[shelf]).map((book) => {
               return <li key={book.id}>
                   <Book book={book} />
                 </li>;
@@ -19,6 +24,16 @@ const Books = ({ books }) => {
       </div>
     );
   };
+
+  const filterBooksByShelf = (books, shelf) => {
+    const filtered = books.reduce((filtered, book) => {
+      if (book.shelf === shelf) {
+        filtered.push(book);
+      }
+      return filtered;
+    }, []);
+    return filtered;
+  }
   return (
     <div className="list-books-content">
       <div>
