@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SearchBar from "./SearchBar";
 import * as BooksAPI from "../BooksAPI";
 import Book from "./Book";
+import { Link } from "react-router-dom";
 
 const Search = ({ onShelfChange, books, shelfDescriptionsDict }) => {
   const [foundBooks, setFoundBooks] = useState([]);
@@ -29,12 +30,9 @@ const Search = ({ onShelfChange, books, shelfDescriptionsDict }) => {
   return (
     <div className="search-books">
       <div className="search-books-bar">
-        <button
-          className="close-search"
-          onClick={() => this.setState({ showSearchPage: false })}
-        >
+        <Link className="close-search" to="/">
           Close
-        </button>
+        </Link>
         <SearchBar onSearchTermChange={onSearchTermChange} />
       </div>
       <div className="search-books-results">
