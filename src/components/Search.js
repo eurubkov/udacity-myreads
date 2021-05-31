@@ -6,15 +6,27 @@ import { Link } from "react-router-dom";
 
 const Search = ({ onShelfChange, books, shelfDescriptionsDict }) => {
   const [foundBooks, setFoundBooks] = useState([]);
+  const [isError, setIsError] = useState(false);
   const onSearchTermChange = (searchTerm) => {
     searchBooks(searchTerm);
   };
   const searchBooks = (searchTerm) => {
-    BooksAPI.search(searchTerm).then((books) =>
-      setFoundBooks(
-        books.filter((book) => book.imageLinks && book.imageLinks.thumbnail)
-      )
-    );
+    if (!searchTerm) {
+      setFoundBooks([]);
+    } else {
+        BooksAPI.search(searchTerm).then((books) => {
+            if (books instanceof Array) {
+                setIsError(false);
+                setFoundBooks(
+                    books.filter((book) => book.imageLinks && book.imageLinks.thumbnail)
+                  )
+            } else {
+                setIsError(true);
+                setFoundBooks([]);
+            }
+        }
+      );
+    }
   };
   const determineBook = (book) => {
     if (book.id in books) return books[book.id];
@@ -36,6 +48,7 @@ const Search = ({ onShelfChange, books, shelfDescriptionsDict }) => {
         <SearchBar onSearchTermChange={onSearchTermChange} />
       </div>
       <div className="search-books-results">
+        <p>{isError ? "No results found" : ""}</p>
         <ol className="books-grid">
           {foundBooks.map((book) => (
             <li key={book.id}>
