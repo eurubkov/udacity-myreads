@@ -6,7 +6,7 @@ import Books from "./components/Books";
 
 class BooksApp extends React.Component {
   state = {
-    books: [],
+    books: {},
     /**
      * TODO: Instead of using this state variable to keep track of which page
      * we're on, use the URL in the browser's address bar. This will ensure that
@@ -18,19 +18,29 @@ class BooksApp extends React.Component {
 
   componentDidMount() {
     this.getAllBooks();
-    console.log(this.state.books);
   }
 
   getAllBooks = () => {
-    BooksAPI.getAll().then((books) => this.setState({ books }));
+    BooksAPI.getAll().then((books) => {
+      const booksDict = {};
+      for (const book of books) {
+        booksDict[book.id] = book;
+      }
+      this.setState({ books: booksDict });
+    ;
+    });
   };
 
   updateBook = (book, newShelf) => {
-    BooksAPI.update(book, newShelf).then((_) => this.setState((prevState) => {
-      let updatedBooks = prevState.books.map(b => b.id === book.id ? {...b, shelf: newShelf} : b);
-      return {books: updatedBooks};
-    }));
-  }
+    BooksAPI.update(book, newShelf).then((_) =>
+      this.setState((prevState) => {
+          const updatedBook = {...book, shelf: newShelf};
+          const booksCopy = {...this.state.books};
+          booksCopy[book.id] = updatedBook;
+          return {books: booksCopy}
+      })
+    );
+  };
 
   onShelfChange = (book, newShelf) => {
     this.updateBook(book, newShelf);
@@ -70,7 +80,7 @@ class BooksApp extends React.Component {
               <h1>MyReads</h1>
             </div>
             <Books
-              books={this.state.books}
+              books={Object.values(this.state.books)}
               onShelfChange={this.onShelfChange}
             />
             <div className="open-search">
