@@ -3,6 +3,7 @@ import React from 'react';
 import './App.css';
 import * as BooksAPI from "./BooksAPI";
 import Books from "./components/Books";
+import Search from "./components/Search";
 
 class BooksApp extends React.Component {
   state = {
@@ -27,19 +28,27 @@ class BooksApp extends React.Component {
         booksDict[book.id] = book;
       }
       this.setState({ books: booksDict });
-    ;
     });
   };
 
   updateBook = (book, newShelf) => {
     BooksAPI.update(book, newShelf).then((_) =>
       this.setState((prevState) => {
-          const updatedBook = {...book, shelf: newShelf};
-          const booksCopy = {...this.state.books};
-          booksCopy[book.id] = updatedBook;
-          return {books: booksCopy}
+        const updatedBook = { ...book, shelf: newShelf };
+        const booksCopy = { ...prevState.books };
+        booksCopy[book.id] = updatedBook;
+        return { books: booksCopy };
       })
     );
+  };
+
+  shelfDescriptionsDict = () => {
+    const shelfDescriptions = {
+      currentlyReading: "Currently Reading",
+      wantToRead: "Want to Read",
+      read: "Read",
+    };
+    return shelfDescriptions;
   };
 
   onShelfChange = (book, newShelf) => {
@@ -50,30 +59,11 @@ class BooksApp extends React.Component {
     return (
       <div className="app">
         {this.state.showSearchPage ? (
-          <div className="search-books">
-            <div className="search-books-bar">
-              <button
-                className="close-search"
-                onClick={() => this.setState({ showSearchPage: false })}
-              >
-                Close
-              </button>
-              <div className="search-books-input-wrapper">
-                {/*
-                  NOTES: The search from BooksAPI is limited to a particular set of search terms.
-                  You can find these search terms here:
-                  https://github.com/udacity/reactnd-project-myreads-starter/blob/master/SEARCH_TERMS.md
-
-                  However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
-                  you don't find a specific author or title. Every search is limited by search terms.
-                */}
-                <input type="text" placeholder="Search by title or author" />
-              </div>
-            </div>
-            <div className="search-books-results">
-              <ol className="books-grid" />
-            </div>
-          </div>
+          <Search
+            books={this.state.books}
+            onShelfChange={this.onShelfChange}
+            shelfDescriptionsDict={this.shelfDescriptionsDict()}
+          />
         ) : (
           <div className="list-books">
             <div className="list-books-title">
